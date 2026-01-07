@@ -1,0 +1,9 @@
+# 1. Ignore all files and directories in the current folder
+/*
+
+# 2. Re-include the specific directories you want
+!example_2/
+!ros2_control_demo_description/
+
+# 3. Optional: Re-include the .gitignore file itself
+!.gitignore
