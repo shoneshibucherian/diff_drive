@@ -17,7 +17,7 @@
   <xacro:property name="z_offset" value="-${base_height/2}" /> <!-- Space btw top of beam and the each joint -->
 
   <!-- Base Link -->
-  <link name="${prefix}base_link">
+  <link name="${prefix}base_footprint">
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
@@ -44,7 +44,7 @@
     </link>
 
     <joint name="${prefix}left_wheel_joint" type="continuous">
-      <parent link="${prefix}base_link"/>
+      <parent link="${prefix}base_footprint"/>
       <child link="${prefix}left_wheel"/>
       <origin xyz="0 -${base_width/2} ${z_offset}" rpy="0 0 0"/>
       <axis xyz="0 1 0"/>
@@ -80,7 +80,7 @@
       </link>
 
     <joint name="${prefix}right_wheel_joint" type="continuous">
-      <parent link="${prefix}base_link"/>
+      <parent link="${prefix}base_footprint"/>
       <child link="${prefix}right_wheel"/>
       <origin xyz="0 ${base_width/2} ${z_offset}" rpy="0 0 0"/>
       <axis xyz="0 1 0"/>
@@ -116,7 +116,7 @@
       </link>
 
     <joint name="${prefix}caster_frontal_wheel_joint" type="fixed">
-      <parent link="${prefix}base_link"/>
+      <parent link="${prefix}base_footprint"/>
       <child link="${prefix}caster_frontal_wheel"/>
       <origin xyz="${base_width/2 - caster_wheel_radius} 0 ${z_offset}" rpy="0 0 0"/>
     </joint>
@@ -149,7 +149,7 @@
       </link>
 
     <joint name="${prefix}caster_rear_wheel_joint" type="fixed">
-      <parent link="${prefix}base_link"/>
+      <parent link="${prefix}base_footprint"/>
       <child link="${prefix}caster_rear_wheel"/>
       <origin xyz="${-base_width/2 + caster_wheel_radius} 0 ${z_offset}" rpy="0 0 0"/>
     </joint>

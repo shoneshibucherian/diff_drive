@@ -39,11 +39,11 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_init(
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
-  hw_start_sec_ =
-    hardware_interface::stod(info_.hardware_parameters["example_param_hw_start_duration_sec"]);
-  hw_stop_sec_ =
-    hardware_interface::stod(info_.hardware_parameters["example_param_hw_stop_duration_sec"]);
+  // // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
+  // hw_start_sec_ =
+  //   hardware_interface::stod(info_.hardware_parameters["example_param_hw_start_duration_sec"]);
+  // hw_stop_sec_ =
+  //   hardware_interface::stod(info_.hardware_parameters["example_param_hw_stop_duration_sec"]);
   // END: This part here is for exemplary purposes - Please do not copy to your production code
  
   for (const hardware_interface::ComponentInfo & joint : info_.joints)
@@ -105,13 +105,14 @@ std::vector<hardware_interface::StateInterface> DiffBotSystemHardware::export_st
 {
   std::vector<hardware_interface::StateInterface> state_interfaces;
 
+  
   for (auto & joint : hw_interfaces_)
   {
     state_interfaces.emplace_back(hardware_interface::StateInterface(
-      joint.second.joint_name, hardware_interface::HW_IF_POSITION, &joint.second.state.position));
+      joint.second.joint_name, hardware_interface::HW_IF_POSITION, &left_wheel_speed_));
     
     state_interfaces.emplace_back(hardware_interface::StateInterface(
-      joint.second.joint_name, hardware_interface::HW_IF_VELOCITY, &joint.second.state.velocity));
+      joint.second.joint_name, hardware_interface::HW_IF_VELOCITY, &right_wheel_speed_));
     
   }
 
@@ -147,6 +148,9 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_activate(
   } catch(...){
     RCLCPP_FATAL_STREAM(get_logger(),"something went wrong while interacting with the port");
   }
+
+  
+  
   RCLCPP_INFO(get_logger(),"hardware started and ready to take commands");
   RCLCPP_INFO(get_logger(), "Successfully activated!");
 
@@ -182,10 +186,7 @@ hardware_interface::return_type DiffBotSystemHardware::read(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & period)
 {
   // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
-  std::stringstream ss;
-  ss << "Reading states:";
 
-  
   for (auto & joint : hw_interfaces_)
   {
     // Simulate DiffBot wheels's movement as a first-order system
@@ -193,13 +194,9 @@ hardware_interface::return_type DiffBotSystemHardware::read(
     // Simply integrates
     joint.second.state.position = joint.second.state.position + period.seconds() * joint.second.state.velocity;
 
-    ss << std::fixed << std::setprecision(2) << std::endl
-       << "\t"
-          "position "
-       << joint.second.state.position << " and velocity " << joint.second.state.velocity << " for '"
-       << joint.first.c_str() << "'!";
+   
   }
-  RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 500, "%s", ss.str().c_str());
+ 
   // END: This part here is for exemplary purposes - Please do not copy to your production code
 
   return hardware_interface::return_type::OK;
@@ -215,7 +212,15 @@ hardware_interface::return_type ros2_control_demo_example_2 ::DiffBotSystemHardw
   // std::string command = "0 0\n";
 
   arduino_.Write(command);
+  std::stringstream ss;
+  ss << "writing states:";
 
+  
+  ss << std::fixed << std::setprecision(2) << std::endl
+       << "\t"
+          "velocity for left "
+       << left_wheel_speed_ << " and velocity " << right_wheel_speed_<< "'!";
+   RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 900, "%s",ss.str().c_str());
   // END: This part here is for exemplary purposes - Please do not copy to your production code
 
   return hardware_interface::return_type::OK;
